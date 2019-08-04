@@ -1,53 +1,83 @@
 import sys
 import time
-from client import DroidClient
-import courses
-from a_star import A_star
-import maneuver
+from graph import Graph
+from collections import defaultdict
+
+# -- Initialize game
+# Footbal field: 8 x 5
+#
+# Each box is a vertex
+#
+#       ------ ☐ ------
+#       ☐══☐══☐══☐══☐══☐
+#       ║           ║  ║
+#       ☐  ☐  ☐  ☐  ☐  ☐
+#       ║           ║  ║
+#       ☐  ☐  ☐  ☐  ☐  ☐
+#       ║     ║     ║  ║
+#       ☐  ☐  ☐  ☐  ☐  ☐
+#       ║     ║        ║
+#       ☐  ☐  ☐  ☐  ☐  ☐
+#       ║     ║        ║
+#       ☐  ☐  ☐  ☐  ☐  ☐
+#       ║              ║
+#       ☐  ☐══☐══☐══☐══☐
+#       ║              ║
+#       ☐══☐══☐  ☐  ☐  ☐
+#       ║               
+# (0,0) ☐══☐══☐══☐══☐══☐
+# --- start ---
+obstacles = defaultdict(bool)
+obstacle_edges = [
+    ((0,0), (0,1)), ((1,0), (1,1)),
+    ((1,1), (1,2)), ((2,1), (2,2)), ((3,1), (3,2)), ((4,1), (4,2)),
+    ((1,3), (2,3)), ((1,4), (2,4)), ((1,5), (2,5)),
+    ((3,5), (4,5)), ((3,6), (4,6)), ((3,7), (4,7))
+]
+for edges in obstacle_edges:
+    obstacles[edges] = True
 
 
-class HorizontalBadAgent:
-    def __init__(self, droid_name, position, min_bound, max_bound):
-        self.position = position
-        self.min_bound = min_bound
-        self.max_bound = max_bound
+good_agent = "D2-0709"
+bad_agents = ["D2-4D79", "D2-6F8D"]
 
-        droid_client = DroidClient()
-        droid_client.scan()
-        droid_client.connect_to_droid(droid_name)
-        self.droid_client = droid_client
-    
-    def move(self):
-        x, y = self.position
-        direction = 1 if (self.max_bound[0] - x) > 0 else -1
-        new_position = (x + direction, y)
-        maneuver.follow_path(
-            self.droid_client, 
-            [self.position, new_position],
-            speed = 0x88)
-        self.position = new_position
+G = Graph(
+    obstacles = obstacles,
+    agent_positions = {
+        good_agent : (0,0),
+        bad_agents[0] : (1,6), # horizontal
+        bad_agents[1] : (0,3)  # veritcal
+    },
+    debug=False
+)
 
-# get course, find path
-G = courses.football_field
-agent_droid = DroidClient()
-agent_droid.scan()
-agent_droid.connect_to_droid('Q5-8CC0') # Agent
-enemy_droid = HorizontalBadAgent('D2-0709', position = (3, 3), 
-    min_bound = (0, 3), max_bound = (3, 3))
+goal = (4, 7)
+print("Game start!")
+G.print()
 
-agent_start = (0, 0)
-agent_goal = (0, 7)
 while True:
-    if(agent_start == agent_goal):
+    if(G.agent_positions[good_agent] == goal):
         break
+
+    # GOOD AGENT
+    path_good_agent = G.get_agent_move(good_agent, 
+        strategy = "A_star", 
+        min_bound = G.get_agent_position(good_agent),
+        max_bound = goal)
+    G.move_agent(good_agent, path_good_agent)    
+    G.print()
     
-    #  AGENT
-    path = A_star(G, agent_start, agent_goal)
-    path = path[0:2]
-    agent_start = path[1]
-    print("move: {0}".format(path))
-    # maneuver.follow_path(agent_droid, path, speed = 0x88, scale_dist = 1)
+    # BAD AGENTS
+    path_bad_agent_0 = G.get_agent_move(bad_agents[0], 
+        strategy = "horizontal", 
+        min_bound = (1,6), 
+        max_bound = (3,6))
+    G.move_agent(bad_agents[0], path_bad_agent_0)
+    G.print()
     
-    print("move enemy")
-    # BAD DROID 1
-    enemy_droid.move()
+    path_bad_agent_1 = G.get_agent_move(bad_agents[1], 
+        strategy = "vertical", 
+        min_bound = (0,3), 
+        max_bound = (0,7))
+    G.move_agent(bad_agents[1], path_bad_agent_1)
+    G.print()

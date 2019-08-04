@@ -12,7 +12,7 @@ def BFS(G, start, goal):
         u = frontier.get()
         if u == goal:
             break
-        for v in G.neighbors(u):
+        for v in G.get_neighbors(u):
             if not discovered[v]:
                 discovered[v] = True
                 parent[v] = u
@@ -27,7 +27,7 @@ def DFS_recursive(G, start, goal):
         discovered[u] = True
         if u == goal:
             return
-        for v in G.neighbors(u):
+        for v in G.get_neighbors(u):
             if not discovered[v]:
                 parent[v] = u
                 DFS(G, v)
@@ -46,7 +46,7 @@ def DFS_iterative(G, start, goal):
             break
         if not discovered[u]:
             discovered[u] = True
-            for v in G.neighbors(u):
+            for v in G.get_neighbors(u):
                 stack.append(v)
                 if v not in parent:
                     parent[v] = u

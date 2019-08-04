@@ -13,19 +13,19 @@ G = Graph(V, E)
 
 
 def test_neighbors():
-    assert (0,1) in G.neighbors((0,0))
-    assert (1,0) in G.neighbors((0,0))
-    assert (1,1) not in G.neighbors((0,0))
+    assert (0,1) in G.get_neighbors((0,0))
+    assert (1,0) in G.get_neighbors((0,0))
+    assert (1,1) not in G.get_neighbors((0,0))
 
-    assert (0,0) in G.neighbors((0,1))
-    assert (1,0) not in G.neighbors((0,1))
-    assert (1,1) not in G.neighbors((0,1))
+    assert (0,0) in G.get_neighbors((0,1))
+    assert (1,0) not in G.get_neighbors((0,1))
+    assert (1,1) not in G.get_neighbors((0,1))
 
-    assert (0,0) in G.neighbors((1,0))
-    assert (0,1) not in G.neighbors((1,0))
-    assert (1,1) not in G.neighbors((1,0))
+    assert (0,0) in G.get_neighbors((1,0))
+    assert (0,1) not in G.get_neighbors((1,0))
+    assert (1,1) not in G.get_neighbors((1,0))
 
-    assert len(G.neighbors((1,1))) == 0
+    assert len(G.get_neighbors((1,1))) == 0
 
 
 def test_dist_between():

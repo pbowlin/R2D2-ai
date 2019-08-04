@@ -58,8 +58,8 @@ class DroidClient:
 
     def send_command(self, command, wait=0, _print=True):
         self.tn.write((command+'\r\n').encode())
-        if _print:
-            print('Command: ' + command)
+        # if _print:
+        #     print('Command: ' + command)
         time.sleep(wait)  # certain commands (like animations and turning) receive responses right away; let's wait so we don't accidentally interrupt them
 
     def wait_for_response(self, _print=True, timeout=15):

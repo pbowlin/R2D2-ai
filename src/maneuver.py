@@ -7,7 +7,7 @@ def follow_path(sphero, path, speed, scale_dist=1):
     for next_pos in path[1:]:
 
         # compute distance and angle to next position
-        print('%s -> %s' % (cur_pos, next_pos))
+        # print('%s -> %s' % (cur_pos, next_pos))
         dist, ang = compute_roll_parameters(cur_pos, next_pos)
         rolled = roll(sphero, speed, ang, dist*scale_dist)
         if not rolled:
@@ -15,7 +15,7 @@ def follow_path(sphero, path, speed, scale_dist=1):
             return False
 
         cur_pos = next_pos
-    print('Path complete.')
+    # print('Path complete.')
     return True
 
 def roll(sphero, speed, ang, time):

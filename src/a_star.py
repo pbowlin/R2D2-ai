@@ -38,7 +38,7 @@ def A_star(G, start, goal, heuristic=null_heuristic):
             pass
         closedSet.add(u)
 
-        for v in G.neighbors(u):
+        for v in G.get_neighbors(u):
             if v in closedSet:
                 continue
 
