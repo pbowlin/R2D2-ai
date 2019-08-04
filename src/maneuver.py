@@ -1,6 +1,57 @@
 import math
 import time
 
+# -----------------------------------------
+# Following are copied from maneuver.py
+def follow_path(self, droid_client, path):
+    """Helper function to move droid client via vertex path specified.
+     Return True if succssful, False otherwise.
+    """
+    #speed, scale_dist = 0x48, 1
+    roll_speed = 0.37
+    roll_time = 1
+
+    cur_pos = path[0]
+    for next_pos in path[1:]:
+
+        # compute distance and angle to next position
+        print('%s -> %s' % (cur_pos, next_pos))
+        
+        #dist, ang = self.__compute_roll_parameters(cur_pos, next_pos)
+        #rolled = self.__roll(droid_client, speed, ang, dist*scale_dist)
+        #if not rolled:
+            #print('Something went wrong.')
+            #return False
+
+        #cur_pos = next_pos
+    #print('Path complete.')
+    #return True
+    
+        
+        x_diff = next_pos[0] - cur_pos[0]
+        y_diff = next_pos[1] - cur_pos[1]
+
+        if x_diff > 0:
+            heading = 90
+        elif x_diff < 0:
+            heading = 270
+        elif y_diff > 0:
+            heading = 0
+        else:
+            heading = 180
+        rolled = self.__roll(droid_client, roll_speed, heading, roll_time)
+
+        cur_pos = next_pos
+    return True
+
+def __roll(self, droid_client, speed, ang, time):
+    """Helper function to move droid. Use follow_path() instead."""
+    return droid_client.roll(speed, ang, time)
+
+
+
+
+'''
 def follow_path(sphero, path, speed, scale_dist=1):
 
     cur_pos = path[0]
@@ -31,3 +82,5 @@ def compute_roll_parameters(old_pos, new_pos):
     ang = 90 - math.atan2(d_y, d_x) * (180/math.pi)
 
     return dist, ang
+
+'''

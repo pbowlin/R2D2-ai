@@ -230,31 +230,6 @@ class Graph:
         # End printing grid. Print final line
         print("#" * self.col * 8)
 
-    # -----------------------------------------
-    # Following are copied from maneuver.py
-    def follow_path(self, droid_client, path):
-        """Helper function to move droid client via vertex path specified.
-         Return True if succssful, False otherwise.
-        """
-        speed, scale_dist = 0x48, 1
-        cur_pos = path[0]
-        for next_pos in path[1:]:
-
-            # compute distance and angle to next position
-            # print('%s -> %s' % (cur_pos, next_pos))
-            dist, ang = self.__compute_roll_parameters(cur_pos, next_pos)
-            rolled = self.__roll(droid_client, speed, ang, dist*scale_dist)
-            if not rolled:
-                print('Something went wrong.')
-                return False
-
-            cur_pos = next_pos
-        # print('Path complete.')
-        return True
-
-    def __roll(self, droid_client, speed, ang, time):
-        """Helper function to move droid. Use follow_path() instead."""
-        return droid_client.roll(speed, ang, time)
 
     def __compute_roll_parameters(self, old_pos, new_pos):
         """Helper function to move droid. Use follow_path() instead."""
