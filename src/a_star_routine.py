@@ -24,9 +24,10 @@ from collections import defaultdict
 #       ☐  ☐══☐══☐══☐══☐
 #       ║              ║
 #       ☐══☐══☐  ☐  ☐  ☐
-#       ║               
+#       ║
 # (0,0) ☐══☐══☐══☐══☐══☐
 # --- start ---
+
 obstacles = defaultdict(bool)
 obstacle_edges = [
     ((0,0), (0,1)), ((1,0), (1,1)),
@@ -60,24 +61,24 @@ while True:
         break
 
     # GOOD AGENT
-    path_good_agent = G.get_agent_move(good_agent, 
-        strategy = "A_star", 
+    path_good_agent = G.get_agent_move(good_agent,
+        strategy = "A_star",
         min_bound = G.get_agent_position(good_agent),
         max_bound = goal)
-    G.move_agent(good_agent, path_good_agent)    
+    G.move_agent(good_agent, path_good_agent)
     G.print()
-    
+
     # BAD AGENTS
-    path_bad_agent_0 = G.get_agent_move(bad_agents[0], 
-        strategy = "horizontal", 
-        min_bound = (1,6), 
+    path_bad_agent_0 = G.get_agent_move(bad_agents[0],
+        strategy = "horizontal",
+        min_bound = (1,6),
         max_bound = (3,6))
     G.move_agent(bad_agents[0], path_bad_agent_0)
     G.print()
-    
-    path_bad_agent_1 = G.get_agent_move(bad_agents[1], 
-        strategy = "vertical", 
-        min_bound = (0,3), 
+
+    path_bad_agent_1 = G.get_agent_move(bad_agents[1],
+        strategy = "vertical",
+        min_bound = (0,3),
         max_bound = (0,7))
     G.move_agent(bad_agents[1], path_bad_agent_1)
     G.print()
