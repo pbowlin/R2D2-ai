@@ -6,6 +6,10 @@ from collections import defaultdict
 from Warrior import Warrior
 from game_helpers import good_droid_turn, bad_droid_turn
 
+def print_graph(G):
+    for row in G:
+        print(row)
+
 # -- Initialize game
 # Footbal field: 8 x 5
 #
@@ -68,10 +72,10 @@ def main():
 
             if agent.get_is_good():
                 game_over = good_droid_turn(agent, G, agents, goal)
-                print(G)
+                print_graph(G)
             else:
                 game_over = bad_droid_turn(agent, G, agents)
-                print(G)
+                print_graph(G)
 
 
 if __name__ == '__main__':

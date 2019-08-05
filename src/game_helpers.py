@@ -4,6 +4,7 @@ from a_star import A_star
 
 from search_and_games import find_path
 
+speed_boost_chance = 0.0
 
 def good_droid_turn(droid, G, warriors, goal):
     if not (droid.get_is_alive()):
@@ -17,7 +18,7 @@ def good_droid_turn(droid, G, warriors, goal):
     if not path:
         print("NO PATH FOR GOOD DROID")
         return True # Game Over
-    follow_path(droid.droid_client, path)
+    follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
@@ -49,12 +50,15 @@ def bad_droid_turn(droid, G, warriors):
     ## UPDATE DROID POSITION
     dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
     # TODO: UPDATE LOGIC FOR SETTING DROID GOAL
-    path = find_path(droid.get_location(), closest_droid.get_location(), G)
+
+    bad_droid_goal = find_bad_droid_goal(G, closest_droid.get_location())
+
+    path = find_path(droid.get_location(), bad_droid_goal, G)
     path = get_path(droid, path)
     if not path:
         print("NO PATH FOR BAD DROID")
         return True  # Game Over
-    follow_path(droid.droid_client, path)
+    follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
@@ -72,7 +76,7 @@ def launch_EMP(droid, bad_guy):
     droid.use_weapon("EMP")
 
 def got_speed_boost():
-    return (random.random() < 0.2)
+    return (random.random() < speed_boost_chance)
 
 # Get nearest opponent of the agent
 def get_nearest_opponent(location, agent, warriors):
@@ -87,7 +91,7 @@ def get_nearest_opponent(location, agent, warriors):
 
     return d_min, opponent
 
-# Get varying path lengthdepending on whether you get a speedboost or not
+# Get varying path length depending on whether you get a speedboost or not
 def get_path(droid, path):
 
     if path is None:
@@ -108,3 +112,11 @@ def compute_distance(location1, location2):
     x_2, y_2 = location2
     d_x, d_y = (x_2 - x_1), (y_2 - y_1)
     return math.sqrt(d_x**2 + d_y**2)
+
+def find_bad_droid_goal(G, goal):
+    while True:
+        goal = (goal[0] + 1, goal[1])
+        if G[goal[0]][goal[1]] == False:
+            return goal
+
+

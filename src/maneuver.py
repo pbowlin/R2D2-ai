@@ -3,7 +3,7 @@ import time
 
 # -----------------------------------------
 # Following are copied from maneuver.py
-def follow_path(droid_client, path):
+def follow_path(droid, path):
     """Helper function to move droid client via vertex path specified.
      Return True if succssful, False otherwise.
     """
@@ -15,6 +15,8 @@ def follow_path(droid_client, path):
     for next_pos in path[1:]:
 
         # compute distance and angle to next position
+        print('droid morality')
+        print(droid.get_is_good())
         print('%s -> %s' % (cur_pos, next_pos))
 
         #dist, ang = self.__compute_roll_parameters(cur_pos, next_pos)
@@ -39,7 +41,7 @@ def follow_path(droid_client, path):
             heading = 270
         else:
             heading = 90
-        rolled = __roll(droid_client, roll_speed, heading, roll_time)
+        rolled = __roll(droid.droid_client, roll_speed, heading, roll_time)
 
         cur_pos = next_pos
     return True
