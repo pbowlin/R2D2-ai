@@ -1,6 +1,5 @@
 import sys
 import time
-from graph import Graph
 from collections import defaultdict
 # Custom Imports
 from Warrior import Warrior
@@ -44,7 +43,7 @@ def main():
          [False, False, True, False, True],
          [False, True, False, False, False],
          [False, False, False, True, False],
-         [True, False, False, False, False],
+         [False, False, False, False, False],
          [False, False, True, False, False],
          [True, False, False, False, False],
          [False, False, False, False, False]]
@@ -61,11 +60,16 @@ def main():
     enemy2_pos = (7, 0)
     enemy_pos = (7, 4)
 
-    good_agent1 = Warrior("D2-5A22", agent1_pos, True)
-    good_agent2 = Warrior("D2-0709", agent2_pos, True)
 
-    bad_agent1 = Warrior("Q5-A9B7", enemy_pos, False)
-    bad_agent2 = Warrior("D2-6F8D", enemy2_pos, False)
+    # if True, robots don't move
+    debug_mode = True
+
+    good_agent1 = Warrior("D2-84FA", agent1_pos, True, debug_mode)
+    good_agent2 = Warrior("D2-0709", agent2_pos, True, debug_mode)
+
+    bad_agent1 = Warrior("D2-6F8D", enemy_pos, False, debug_mode)
+    bad_agent2 = Warrior("D2-5A22", enemy2_pos, False, debug_mode)
+
 
     agents = [good_agent1, bad_agent1, good_agent2, bad_agent2]
 

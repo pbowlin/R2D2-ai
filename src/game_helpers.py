@@ -22,7 +22,9 @@ def good_droid_turn(droid, G, warriors):
     if not path:
         print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS 
         return True # Game Over
-    follow_path(droid, path)
+    
+    if not droid.debug:
+        follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
@@ -79,7 +81,9 @@ def call_airstrike(agents):
         agent_to_attack = good_living_agents[0] 
         prob_airstrike_hit /= 2  
     
+
     play_airstrike()
+
     if random.random() <= prob_airstrike_hit:
         agent_to_attack.droid_client.animate(14, 0) ##fall over and die
         agent_to_attack.set_is_alive(False)
@@ -118,7 +122,9 @@ def bad_droid_turn(droid, G, warriors):
     if not path:
         print("NO PATH FOR BAD DROID")  ##GAME SHOULD NOT END IF WE HAVE 2 BAD DROIDS
         return True  # Game Over
-    follow_path(droid, path)
+    
+    if not droid.debug:
+        follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
