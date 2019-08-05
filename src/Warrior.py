@@ -11,7 +11,7 @@ class Warrior(object):
 
     def __init__(self, droid_id, location, goodness_boolean, debug = False):
         self.ID = droid_id
-        self.weapons_held = collections.Counter()
+        self.EMPs = 2
         self.current_location = location
 
         # Is this droid good or evil? True refers to good droid, False refers to bad droid
@@ -38,7 +38,7 @@ class Warrior(object):
 
     def get_location(self):
         return self.current_location
-
+    '''
     def add_weapon(self, weaponString):
         self.weapons_held[weaponString] += 1
 
@@ -47,7 +47,7 @@ class Warrior(object):
             self.weapons_held[weaponString] -= 1
         else:
             print("Weapon is unavailable")
-
+    '''
     def get_is_good(self):
         return self.is_good
 

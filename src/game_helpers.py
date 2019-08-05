@@ -5,7 +5,7 @@ from sound import play_airstrike
 from search_and_games import find_path
 
 speed_boost_chance = 0.0
-call_airstrike_prob = 0.2
+call_airstrike_prob = 0.5
 
 def good_droid_turn(droid, G, warriors):
     if not (droid.get_is_alive()):
@@ -44,8 +44,9 @@ def good_droid_turn(droid, G, warriors):
     else:
         dist, bad_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
         if 1 < dist < 2:
-            if droid.weapons_held["EMP"] > 0:
+            if droid.EMPs > 0:
                 launch_EMP(droid, bad_droid)
+
     return False
 
 def launch_EMP(droid, bad_guy):
@@ -54,14 +55,17 @@ def launch_EMP(droid, bad_guy):
     print('bad guy now inactive')
     bad_guy.droid_client.play_sound(5, 0)
     print('after play sound')
+
     for i in range(4):
         bad_guy.droid_client.rotate_head(45)
         bad_guy.droid_client.rotate_head(0)
         bad_guy.droid_client.rotate_head(90)
         bad_guy.droid_client.rotate_head(0)
-    droid.use_weapon("EMP")
+    
+    droid.EMPs -= 1
 
 def call_airstrike(agents):
+    print("AIRSTRIKE CALLED")
     prob_airstrike_hit = 0.5
     good_living_agents = []
     bad_agents = []
@@ -77,12 +81,14 @@ def call_airstrike(agents):
         agent_to_attack = good_living_agents[0] 
         prob_airstrike_hit /= 2  
     
-    # play_airstrike()
+
+    play_airstrike()
 
     if random.random() <= prob_airstrike_hit:
         agent_to_attack.droid_client.animate(14, 0) ##fall over and die
         agent_to_attack.set_is_alive(False)
         good_living_agents.remove(agent_to_attack)
+        print("AIRSTRIKE HIT")
         if len(good_living_agents) == 0:
             bad_agents[0].droid_client.animate(3,0)
             bad_agents[1].droid_client.animate(3,0)

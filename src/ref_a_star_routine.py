@@ -53,12 +53,13 @@ def main():
     goal = (7, 4)
     #goal = (4, 3)
     ## Set Up Agents
-    agent1_pos = (0, 1)
-    agent2_pos= (0, 2)
+    agent1_pos = (0, 0)
+    agent2_pos= (0, 4)
 
 
+    enemy2_pos = (7, 0)
     enemy_pos = (7, 4)
-    enemy2_pos = (7, 1)
+
 
     # if True, robots don't move
     debug_mode = True
@@ -68,6 +69,7 @@ def main():
 
     bad_agent1 = Warrior("D2-6F8D", enemy_pos, False, debug_mode)
     bad_agent2 = Warrior("D2-5A22", enemy2_pos, False, debug_mode)
+
 
     agents = [good_agent1, bad_agent1, good_agent2, bad_agent2]
 
