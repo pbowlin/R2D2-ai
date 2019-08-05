@@ -16,7 +16,7 @@ def follow_path(droid_client, path):
 
         # compute distance and angle to next position
         print('%s -> %s' % (cur_pos, next_pos))
-        
+
         #dist, ang = self.__compute_roll_parameters(cur_pos, next_pos)
         #rolled = self.__roll(droid_client, speed, ang, dist*scale_dist)
         #if not rolled:
@@ -26,8 +26,8 @@ def follow_path(droid_client, path):
         #cur_pos = next_pos
     #print('Path complete.')
     #return True
-    
-        
+
+
         x_diff = next_pos[0] - cur_pos[0]
         y_diff = next_pos[1] - cur_pos[1]
 

@@ -2,39 +2,41 @@ import random, math
 from maneuver import follow_path
 from a_star import A_star
 
+from search_and_games import find_path
+
+
 def good_droid_turn(droid, G, warriors, goal):
-
     if not (droid.get_is_alive()):
-        print("YOU LOST")
-        # droid falls over
-        return True
+        print("GOOD AGENT LOST!")
+        # TODO: droid falls over
+        return True # Game Over
 
-    path = A_star(G, droid.get_location(), goal)
+    ## UPDATE DROID POSITION
+    path = find_path(droid.get_location(), goal, G)
     path = get_path(droid, path)
     if not path:
         print("NO PATH FOR GOOD DROID")
-        return True # game over
-
-    x, y = path[0]
-    # Update grid states
-    # Update agent's position
-    G.update_agent_position(droid.ID, droid.get_location())
-    # Update grid so that old position (x,y) is now available for move into
-    # while new position is not available into
-    G.update_neighbors((x,y), droid.get_location())
+        return True # Game Over
     follow_path(droid.droid_client, path)
 
+    ## UPDATE GRID STATE
+    v1 = path[0]
+    v2 = path[-1]
+    G[v1[0]][v1[1]] = False
+    G[v2[0]][v2[1]] = True
+    agent_pos = path[1]
+
+    ## POST UPDATE ACTIONS
     if droid in goal:
         print("YOU WON")
-        # chirping Sound
-        agent_droid.animate(5)
-        # headspin
+        agent_droid.animate(5) # chirping Sound
+        # TODO: headspin
         return True
     else:
-        dist, bad_droid = get_nearest_opponent(droid.get_location(), warriors)
+        dist, bad_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
         if 1 < dist < 2:
             bad_droid.set_is_active(False)
-            # headspin
+            # TODO: headspin
     return False
 
 def bad_droid_turn(droid, G, warriors):
@@ -44,24 +46,27 @@ def bad_droid_turn(droid, G, warriors):
         droid.set_is_active(True)
         return False
 
-    dist, closest_droid = get_nearest_opponent(droid.get_location(), warriors)
-    path = A_star(G, droid.get_location(), closest_droid.get_location())
-
+    ## UPDATE DROID POSITION
+    dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
+    # TODO: UPDATE LOGIC FOR SETTING DROID GOAL
+    path = find_path(droid.get_location(), closest_droid.get_location(), G)
     path = get_path(droid, path)
     if not path:
         print("NO PATH FOR BAD DROID")
-        return True # game over
-    x, y = path[0]
-    # Update grid states
-    # Update agent's position
-    G.update_agent_position(droid.ID, droid.get_location())
-    # Update grid so that old position (x,y) is now available for move into
-    # while new position is not available into
-    G.update_neighbors((x,y), droid.get_location())
+        return True  # Game Over
     follow_path(droid.droid_client, path)
 
+    ## UPDATE GRID STATE
+    v1 = path[0]
+    v2 = path[-1]
+    G[v1[0]][v1[1]] = False
+    G[v2[0]][v2[1]] = True
+    enemy_pos = path[1]
+
+    # TODO: POST UPDATE ACTIONS
     return False
 
+# TODO:
 def launch_EMP(self, bad_guy):
     bad_guy.set_is_active(False)
     # use_weapon("EMP")
@@ -69,12 +74,12 @@ def launch_EMP(self, bad_guy):
 def got_speed_boost():
     return (random.random() < 0.2)
 
-def get_nearest_opponent(location, warriors):
-
+# Get nearest opponent of the agent
+def get_nearest_opponent(location, agent, warriors):
     d_min = math.inf
     opponent = None
     for w in warriors:
-        if w.get_is_good():
+        if w.get_is_good() is not agent.get_is_good():
             dist = compute_distance(location, w.get_location())
             if dist < d_min:
                 d_min = dist
@@ -82,20 +87,22 @@ def get_nearest_opponent(location, warriors):
 
     return d_min, opponent
 
+# Get varying path lengthdepending on whether you get a speedboost or not
 def get_path(droid, path):
 
     if path is None:
         return False
-
-    if got_speed_boost():
+    if got_speed_boost() and len(path) > 2:
         path = path[0:3]
         droid.set_location(path[2])
-    else:
+    elif len(path) > 1:
         path = path[0:2]
         droid.set_location(path[1])
-
+    else:
+        path = False
     return path
 
+# Compute eucledian distance between two points
 def compute_distance(location1, location2):
     x_1, y_1 = location1
     x_2, y_2 = location2

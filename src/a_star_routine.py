@@ -6,13 +6,13 @@ import maneuver
 from search_and_games import find_path
 
 
-G = [[False, False, False, False, False], 
-     [False, False, True, False, True], 
-     [False, True, False, False, False], 
-     [False, False, False, True, False], 
-     [True, False, False, False, False], 
-     [False, False, True, False, False], 
-     [True, False, False, False, False], 
+G = [[False, False, False, False, False],
+     [False, False, True, False, True],
+     [False, True, False, False, False],
+     [False, False, False, True, False],
+     [True, False, False, False, False],
+     [False, False, True, False, False],
+     [True, False, False, False, False],
      [False, False, False, False, False]]
 
 
@@ -58,13 +58,13 @@ G[enemy_pos[0]][enemy_pos[1]] = True
 speed = 0x88
 while True:
 
-    
+
     #  AGENT
     path = find_path(agent_pos, goal, G)
     maneuver.follow_path(droid, path[0:2])
-    
+
     print(path)
-    
+
     v1 = path[0]
     v2 = path[1]
     G[v1[0]][v1[1]] = False
@@ -77,8 +77,8 @@ while True:
     path = find_path(enemy_pos, agent_pos, G)
     print(path)
     maneuver.follow_path(enemy, path[0:2])
-    
-    
+
+
     v1 = path[0]
     v2 = path[1]
     G[v1[0]][v1[1]] = False
@@ -93,4 +93,3 @@ while True:
     # path =  path[0:2]
     # maneuver.follow_path(bad_droid_2, [enemy3, dest3], speed, scale_dist = 1)
     # enemy2 = dest2
-
