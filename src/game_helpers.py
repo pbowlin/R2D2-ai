@@ -67,9 +67,9 @@ def bad_droid_turn(droid, G, warriors):
     return False
 
 # TODO:
-def launch_EMP(self, bad_guy):
+def launch_EMP(droid, bad_guy):
     bad_guy.set_is_active(False)
-    # use_weapon("EMP")
+    droid.use_weapon("EMP")
 
 def got_speed_boost():
     return (random.random() < 0.2)
