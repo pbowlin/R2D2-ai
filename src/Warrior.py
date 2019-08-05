@@ -26,10 +26,10 @@ class Warrior(object):
         self.is_active = True
 
         # CODERPAD SECTION
-        droid_client = DroidClient()
-        droid_client.scan()
-        droid_client.connect_to_droid(droid_id)
-        self.droid_client = droid_client
+        # droid_client = DroidClient()
+        # droid_client.scan()
+        # droid_client.connect_to_droid(droid_id)
+        self.droid_client = None#droid_client
 
     def set_location(self, location):
         self.current_location = location
