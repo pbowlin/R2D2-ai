@@ -4,6 +4,7 @@ from client import DroidClient
 from a_star import A_star
 import math
 import random
+import maneuver
 
 class Graph:
     def __init__(self, obstacles, agent_positions = {}, row = 8, col = 5, debug=False):
@@ -186,7 +187,7 @@ class Graph:
 
         # Physically move robot
         if not self.debug:
-            self.follow_path(
+            maneuver.follow_path(
                 droid_client = self.get_agent_droidclient(agent_name),
                 path = [(x,y), (new_x, new_y)]
             )
