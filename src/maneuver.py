@@ -8,7 +8,7 @@ def follow_path(droid_client, path):
      Return True if succssful, False otherwise.
     """
     #speed, scale_dist = 0x48, 1
-    roll_speed = 0.37
+    roll_speed = 0.39
     roll_time = 1
 
     cur_pos = path[0]

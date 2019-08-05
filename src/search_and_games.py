@@ -233,7 +233,7 @@ def _is_obstacle(node, scene, goal):
 def _get_neighbors(node, scene, goal):
     neighbors = []
     #neighbor_offsets = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
-    neighbor_offsets = [[-1,0],[0,-1],[0,1],[1,0]]
+    neighbor_offsets = [[1,0],[0,1],[-1,0],[0,-1]]
 
     for offset in neighbor_offsets:
       neighbor_node = (node[0] + offset[0], node[1] + offset[1])

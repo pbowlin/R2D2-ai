@@ -5,6 +5,9 @@ from a_star import A_star
 import maneuver
 from search_and_games import find_path
 
+def print_graph(g):
+    for row in g:
+        print(row)
 
 G = [[False, False, False, False, False], 
      [False, False, True, False, True], 
@@ -14,6 +17,8 @@ G = [[False, False, False, False, False],
      [False, False, True, False, False], 
      [True, False, False, False, False], 
      [False, False, False, False, False]]
+
+
 
 
 # connect to Sphero
@@ -51,11 +56,10 @@ G[enemy_pos[0]][enemy_pos[1]] = True
 # ☑   ☐ ══☐   ☒
 
 
-
 # enemy1_bound = (5, 6)
 # enemy2 = (4, 4)
 # enemy2_bound = (3, 4)
-speed = 0x88
+
 while True:
 
     
@@ -71,10 +75,18 @@ while True:
     G[v2[0]][v2[1]] = True
     agent_pos = path[1]
 
-    print(G)
+    print_graph(G)
 
     # BAD DROID 1
-    path = find_path(enemy_pos, agent_pos, G)
+    i = 1
+    while True:
+        enemy_goal = agent_pos + (i, 0)
+        if G[enemy_goal[0]][enemy_goal[1]] == True:
+            i++
+        else:
+            break
+
+    path = find_path(enemy_pos, enemy_goal, G)
     print(path)
     maneuver.follow_path(enemy, path[0:2])
     
@@ -85,7 +97,7 @@ while True:
     G[v2[0]][v2[1]] = True
     enemy_pos = path[1]
 
-    print(G)
+    print_graph(G)
 
 
     # BAD DROID 2
@@ -93,4 +105,5 @@ while True:
     # path =  path[0:2]
     # maneuver.follow_path(bad_droid_2, [enemy3, dest3], speed, scale_dist = 1)
     # enemy2 = dest2
+
 
