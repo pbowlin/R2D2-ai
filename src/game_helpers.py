@@ -6,11 +6,14 @@ from search_and_games import find_path
 
 speed_boost_chance = 0.0
 
-def good_droid_turn(droid, G, warriors, goal):
+def good_droid_turn(droid, G, warriors):
     if not (droid.get_is_alive()):
         print("GOOD AGENT LOST!")
         # TODO: droid falls over
         return True # Game Over
+
+    goal = find_good_droid_goal(G, droid.get_location())
+    print('good droid goal: ' + str(goal))
 
     ## UPDATE DROID POSITION
     path = find_path(droid.get_location(), goal, G)
@@ -25,18 +28,20 @@ def good_droid_turn(droid, G, warriors, goal):
     v2 = path[-1]
     G[v1[0]][v1[1]] = False
     G[v2[0]][v2[1]] = True
-    agent_pos = path[1]
+    #agent_pos = path[1]
 
     ## POST UPDATE ACTIONS
-    if droid in goal:
+    droid_location = droid.get_location()
+    if droid_location[0] > len(G) - 2:
+    #if droid in goal:
         print("YOU WON")
-        agent_droid.animate(5) # chirping Sound
+        droid.droid_client.animate(3, 0) # chirping Sound
         # TODO: headspin
         return True
     else:
         dist, bad_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
         if 1 < dist < 2:
-            bad_droid.set_is_active(False)
+            launch_EMP(droid, bad_droid)
             # TODO: headspin
     return False
 
@@ -44,6 +49,7 @@ def bad_droid_turn(droid, G, warriors):
 
     # Skip Droid's Turn
     if not droid.get_is_active():
+        print('droid is inactive')
         droid.set_is_active(True)
         return False
 
@@ -54,6 +60,8 @@ def bad_droid_turn(droid, G, warriors):
     bad_droid_goal = find_bad_droid_goal(G, closest_droid.get_location())
 
     path = find_path(droid.get_location(), bad_droid_goal, G)
+
+    print('path is:' + str(path))
     path = get_path(droid, path)
     if not path:
         print("NO PATH FOR BAD DROID")
@@ -65,14 +73,23 @@ def bad_droid_turn(droid, G, warriors):
     v2 = path[-1]
     G[v1[0]][v1[1]] = False
     G[v2[0]][v2[1]] = True
-    enemy_pos = path[1]
+    #enemy_pos = path[1]
 
     # TODO: POST UPDATE ACTIONS
     return False
 
 # TODO:
 def launch_EMP(droid, bad_guy):
+    print('Launching EMP')
     bad_guy.set_is_active(False)
+    print('bad guy now inactive')
+    bad_guy.droid_client.play_sound(5, 0)
+    print('after play sound')
+    for i in range(4):
+        bad_guy.droid_client.rotate_head(45)
+        bad_guy.droid_client.rotate_head(0)
+        bad_guy.droid_client.rotate_head(90)
+        bad_guy.droid_client.rotate_head(0)
     droid.use_weapon("EMP")
 
 def got_speed_boost():
@@ -118,5 +135,21 @@ def find_bad_droid_goal(G, goal):
         goal = (goal[0] + 1, goal[1])
         if G[goal[0]][goal[1]] == False:
             return goal
+
+def find_good_droid_goal(G, location):
+    goal_distance = 1000000
+    x = len(G)-1
+    goal = (x, 0)
+
+    for y in range(len(G[-1])):
+        cell_distance = compute_distance(location, (x, y))
+        if cell_distance < goal_distance:
+            goal_distance = cell_distance
+            goal = (x, y)
+
+    return goal
+
+
+
 
 

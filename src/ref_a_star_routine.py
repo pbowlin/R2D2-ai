@@ -51,15 +51,23 @@ def main():
 
 
     goal = (7, 4)
+    #goal = (4, 3)
     ## Set Up Agents
-    agent_pos = (0, 0)
-    enemy_pos = (7, 2)
-    good_agent1 = Warrior("D2-6F8D", (0, 0), True)
-    bad_agent1 = Warrior("Q5-8CC0", (7, 2), False)
-    agents = [good_agent1, bad_agent1]
+    agent1_pos = (0, 1)
+    agent2_pos= (0, 2)
 
-    G[agent_pos[0]][agent_pos[1]] = True
+    enemy_pos = (7, 4)
+
+    good_agent1 = Warrior("D2-6F8D", agent1_pos, True)
+    good_agent2 = Warrior("D2-0709", agent2_pos, True)
+
+    bad_agent1 = Warrior("Q5-8CC0", enemy_pos, False)
+    agents = [good_agent1, bad_agent1, good_agent2, bad_agent1]
+
+    G[agent1_pos[0]][agent1_pos[1]] = True
+    G[agent2_pos[0]][agent2_pos[1]] = True
     G[enemy_pos[0]][enemy_pos[1]] = True
+
 
     print("Game start!")
 
@@ -71,9 +79,10 @@ def main():
                 return
 
             if agent.get_is_good():
-                game_over = good_droid_turn(agent, G, agents, goal)
+                game_over = good_droid_turn(agent, G, agents)
                 print_graph(G)
             else:
+                print('trying bad droid turn')
                 game_over = bad_droid_turn(agent, G, agents)
                 print_graph(G)
 
