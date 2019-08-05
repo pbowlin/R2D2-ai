@@ -9,7 +9,7 @@ import collections
 # this class takes in a DroidClient from client.py as an object
 class Warrior(object):
 
-    def __init__(self, droid_id, location, goodness_boolean):
+    def __init__(self, droid_id, location, goodness_boolean, debug = False):
         self.ID = droid_id
         self.weapons_held = collections.Counter()
         self.current_location = location
@@ -26,9 +26,11 @@ class Warrior(object):
         self.is_active = True
 
         # CODERPAD SECTION
+        self.debug = debug
         droid_client = DroidClient()
-        droid_client.scan()
-        droid_client.connect_to_droid(droid_id)
+        if not debug:
+            droid_client.scan()
+            droid_client.connect_to_droid(droid_id)
         self.droid_client = droid_client
 
     def set_location(self, location):

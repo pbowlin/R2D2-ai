@@ -22,7 +22,9 @@ def good_droid_turn(droid, G, warriors):
     if not path:
         print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS 
         return True # Game Over
-    follow_path(droid, path)
+    
+    if not droid.debug:
+        follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
@@ -114,7 +116,9 @@ def bad_droid_turn(droid, G, warriors):
     if not path:
         print("NO PATH FOR BAD DROID")  ##GAME SHOULD NOT END IF WE HAVE 2 BAD DROIDS
         return True  # Game Over
-    follow_path(droid, path)
+    
+    if not droid.debug:
+        follow_path(droid, path)
 
     ## UPDATE GRID STATE
     v1 = path[0]
