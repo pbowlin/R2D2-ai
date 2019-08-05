@@ -75,8 +75,8 @@ def call_airstrike(agents):
         agent_to_attack = good_living_agents[0] 
         prob_airstrike_hit /= 2  
     
-    play_airstrike()
-    
+    # play_airstrike()
+
     if random.random() <= prob_airstrike_hit:
         agent_to_attack.droid_client.animate(14, 0) ##fall over and die
         agent_to_attack.set_is_alive(False)
