@@ -1,10 +1,11 @@
 import random, math
 from maneuver import follow_path
 from a_star import A_star
-
+from sound import play_airstrike
 from search_and_games import find_path
 
 speed_boost_chance = 0.0
+call_airstrike_prob = 0.2
 
 def good_droid_turn(droid, G, warriors):
     if not (droid.get_is_alive()):
@@ -19,7 +20,7 @@ def good_droid_turn(droid, G, warriors):
     path = find_path(droid.get_location(), goal, G)
     path = get_path(droid, path)
     if not path:
-        print("NO PATH FOR GOOD DROID")
+        print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS 
         return True # Game Over
     follow_path(droid, path)
 
@@ -41,44 +42,10 @@ def good_droid_turn(droid, G, warriors):
     else:
         dist, bad_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
         if 1 < dist < 2:
-            launch_EMP(droid, bad_droid)
-            # TODO: headspin
+            if droid.weapons_held["EMP"] > 0:
+                launch_EMP(droid, bad_droid)
     return False
 
-def bad_droid_turn(droid, G, warriors):
-
-    # Skip Droid's Turn
-    if not droid.get_is_active():
-        print('droid is inactive')
-        droid.set_is_active(True)
-        return False
-
-    ## UPDATE DROID POSITION
-    dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
-    # TODO: UPDATE LOGIC FOR SETTING DROID GOAL
-
-    bad_droid_goal = find_bad_droid_goal(G, closest_droid.get_location())
-
-    path = find_path(droid.get_location(), bad_droid_goal, G)
-
-    print('path is:' + str(path))
-    path = get_path(droid, path)
-    if not path:
-        print("NO PATH FOR BAD DROID")
-        return True  # Game Over
-    follow_path(droid, path)
-
-    ## UPDATE GRID STATE
-    v1 = path[0]
-    v2 = path[-1]
-    G[v1[0]][v1[1]] = False
-    G[v2[0]][v2[1]] = True
-    #enemy_pos = path[1]
-
-    # TODO: POST UPDATE ACTIONS
-    return False
-
-# TODO:
 def launch_EMP(droid, bad_guy):
     print('Launching EMP')
     bad_guy.set_is_active(False)
@@ -91,6 +58,72 @@ def launch_EMP(droid, bad_guy):
         bad_guy.droid_client.rotate_head(90)
         bad_guy.droid_client.rotate_head(0)
     droid.use_weapon("EMP")
+
+def call_airstrike(agents):
+    prob_airstrike_hit = 0.5
+    good_living_agents = []
+    bad_agents = []
+    for agent in agents:
+        if agent.get_is_good() and agent.get_is_alive():
+            good_living_agents.append(agent)
+        elif not agent.get_is_good():
+            bad_agents.append(agent)
+
+    if len(good_living_agents) > 1:
+        agent_to_attack = good_living_agents[0] if random.random() < .5 else good_living_agents[1]
+    else:
+        agent_to_attack = good_living_agents[0] 
+        prob_airstrike_hit /= 2  
+    
+    sound.play_airstrike()
+    if random.random() <= prob_airstrike_hit:
+        agent_to_attack.droid_client.animate(14, 0) ##fall over and die
+        agent_to_attack.set_is_alive(False)
+        good_living_agents.remove(agent_to_attack)
+        if len(good_living_agents) == 0:
+            bad_agents[0].droid_client.animate(3,0)
+            bad_agents[1].droid_client.animate(3,0)
+            return True ##this means the airstrike killed last living good agent
+    else:
+        agent_to_attack.droid_client.animate(7, 0) ##airstrike missed target
+    return False
+
+def bad_droid_turn(droid, G, warriors):
+
+    # Skip Droid's Turn
+    if not droid.get_is_active():
+        print('droid is inactive')
+        droid.set_is_active(True)
+        return False
+
+    if random.random() <= call_airstrike_prob:
+        if call_airstrike(warriors):
+            return True ## this means the airstrike killed the last living good_agent
+
+    ## UPDATE DROID POSITION
+    dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
+    # TODO: UPDATE LOGIC FOR SETTING DROID GOAL
+
+    bad_droid_goal = find_bad_droid_goal(G, closest_droid.get_location())
+
+    path = find_path(droid.get_location(), bad_droid_goal, G)
+
+    print('path is:' + str(path))
+    path = get_path(droid, path)
+    if not path:
+        print("NO PATH FOR BAD DROID")  ##GAME SHOULD NOT END IF WE HAVE 2 BAD DROIDS
+        return True  # Game Over
+    follow_path(droid, path)
+
+    ## UPDATE GRID STATE
+    v1 = path[0]
+    v2 = path[-1]
+    G[v1[0]][v1[1]] = False
+    G[v2[0]][v2[1]] = True
+    #enemy_pos = path[1]
+
+    # TODO: POST UPDATE ACTIONS
+    return False
 
 def got_speed_boost():
     return (random.random() < speed_boost_chance)

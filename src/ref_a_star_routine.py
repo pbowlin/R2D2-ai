@@ -34,6 +34,7 @@ def print_graph(G):
 #       ║
 # (0,0) ☐══☐══☐══☐══☐══☐
 # --- start ---
+
 def main():
     game_over = False
 
@@ -56,13 +57,17 @@ def main():
     agent1_pos = (0, 1)
     agent2_pos= (0, 2)
 
-    enemy_pos = (7, 4)
 
-    good_agent1 = Warrior("D2-6F8D", agent1_pos, True)
+    enemy_pos = (7, 4)
+    enemy2_pos = (7, 1)
+
+    good_agent1 = Warrior("D2-84FA", agent1_pos, True)
     good_agent2 = Warrior("D2-0709", agent2_pos, True)
 
     bad_agent1 = Warrior("Q5-8CC0", enemy_pos, False)
-    agents = [good_agent1, bad_agent1, good_agent2, bad_agent1]
+    bad_agent2 = Warrior("D2-5A22", enemy2_pos, False)
+
+    agents = [good_agent1, bad_agent1, good_agent2, bad_agent2]
 
     G[agent1_pos[0]][agent1_pos[1]] = True
     G[agent2_pos[0]][agent2_pos[1]] = True
