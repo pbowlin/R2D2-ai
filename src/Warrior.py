@@ -1,13 +1,13 @@
 
 ############################################################
-# Warriors Class for Guerilla Project
+# Warrior Class for Guerilla Project
 ############################################################
-
+from client import DroidClient
 import collections
 
 # create a class for each droid on the board
 # this class takes in a DroidClient from client.py as an object
-class Warriors(object):
+class Warrior(object):
 
     def __init__(self, droid_id, location, goodness_boolean):
         self.ID = droid_id
@@ -26,11 +26,10 @@ class Warriors(object):
         self.is_active = True
 
         # CODERPAD SECTION
-        self.droid_client = DroidClient()
-        self.droid_client.scan()
-        self.droid_client.connect_to_droid(droid_id)
-
-        pass
+        # droid_client = DroidClient()
+        # droid_client.scan()
+        # droid_client.connect_to_droid(droid_id)
+        self.droid_client = None#droid_client
 
     def set_location(self, location):
         self.current_location = location
@@ -63,5 +62,5 @@ class Warriors(object):
         return self.is_active
 
 ############################################################
-# END OF WARRIORS CLASS FOR GUERILLA PROJECT
+# END OF WARRIOR CLASS FOR GUERILLA PROJECT
 ############################################################
