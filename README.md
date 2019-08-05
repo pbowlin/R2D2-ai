@@ -45,7 +45,7 @@ brew install yarn
 
 install python dependencies
 ```
-python -m pip install numpy pygame pynput
+python -m pip install numpy pygame pynput playsound
 ```
 
 compile the server library and dependencies
