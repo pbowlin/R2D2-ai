@@ -41,6 +41,7 @@ def follow_path(droid, path):
             heading = 270
         else:
             heading = 90
+        rolled = __roll(droid.droid_client, roll_speed, heading, 0)
         rolled = __roll(droid.droid_client, roll_speed, heading, roll_time)
 
         cur_pos = next_pos
