@@ -18,18 +18,19 @@ def main():
          [False, False, False, False, False],
          [False, False, True, False, False],
          [True, False, False, False, False],
+         [False, False, False, True, False],
          [False, False, False, False, False]]
 
 
 
     ## Set Up Agents
-    '''
+    
     agent1_pos = (0, 0)
     agent2_pos= (0, 4)
 
 
-    enemy_pos = (7, 4)
-    enemy2_pos = (7, 0)
+    enemy_pos = (7, 0)
+    enemy2_pos = (7, 4)
     '''
     agent1_pos = (0, 2)
     agent2_pos= (4, 2)
@@ -37,17 +38,18 @@ def main():
 
     enemy_pos = (6, 2)
     enemy2_pos = (7, 2)
+    '''
     
 
 
     # if True, robots don't move
-    debug_mode = True
+    debug_mode = False
 
     good_agent1 = Warrior("D2-84FA", agent1_pos, True, debug_mode)
     good_agent2 = Warrior("D2-0709", agent2_pos, True, debug_mode)
 
-    bad_agent1 = Warrior("D2-6F8D", enemy_pos, False, debug_mode)
-    bad_agent2 = Warrior("Q5-A9B7", enemy2_pos, False, debug_mode)
+    bad_agent1 = Warrior("Q5-8CC0", enemy_pos, False, debug_mode)
+    bad_agent2 = Warrior("Q5-968A", enemy2_pos, False, debug_mode)
 
 
     agents = [good_agent1, bad_agent1, good_agent2, bad_agent2]

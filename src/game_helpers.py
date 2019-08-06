@@ -3,8 +3,10 @@ from maneuver import follow_path
 from a_star import A_star
 from sound import play_airstrike
 from search_and_games import find_path
+import time
 
-speed_boost_chance = 0.2
+random.seed(3)
+speed_boost_chance = 0.25
 call_airstrike_prob = 0.2
 EMP_locations = []
 
@@ -80,6 +82,7 @@ def launch_EMP(droid, bad_guy):
             bad_guy.droid_client.rotate_head(0)
             bad_guy.droid_client.rotate_head(90)
             bad_guy.droid_client.rotate_head(0)
+        time.sleep(1)    
     
     droid.EMPs -= 1
     print("Droid now has {} EMPs left.".format(droid.EMPs))
@@ -124,7 +127,8 @@ def call_airstrike(agents):
     else:
         print("AIRSTRIKE MISS")
         if not agent_to_attack.debug:
-            agent_to_attack.droid_client.animate(7, 0) ##airstrike missed target
+            agent_to_attack.droid_client.play_sound(7, 0) ##airstrike missed target
+            time.sleep(4)
     return False
 
 def bad_droid_turn(droid, G, warriors):
@@ -193,6 +197,8 @@ def get_path(droid, path):
         print("Droid got a speed boost!")
         path = path[0:3]
         droid.set_location(path[2])
+        if not droid.debug:
+            droid.droid_client.play_sound(3, 0)
     elif len(path) > 1:
         path = path[0:2]
         droid.set_location(path[1])
