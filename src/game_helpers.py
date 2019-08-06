@@ -6,6 +6,7 @@ from search_and_games import find_path
 
 speed_boost_chance = 0.0
 call_airstrike_prob = 0.2
+EMP_locations = []
 
 def good_droid_turn(droid, G, warriors):
     print("Good droid at {} attempting its turn".format(droid.get_location()))
@@ -47,13 +48,15 @@ def good_droid_turn(droid, G, warriors):
     #G[v2[0]][v2[1]] = True
     #agent_pos = path[1]
     update_grid_state(G, path)
+    check_for_EMP(droid)
 
     ## POST UPDATE ACTIONS
     droid_location = droid.get_location()
     if droid_location[0] > len(G) - 2:
     #if droid in goal:
         print("YOU WON")
-        droid.droid_client.animate(3, 0) # chirping Sound
+        if not droid.debug:
+            droid.droid_client.animate(3, 0) # chirping Sound
         # TODO: headspin
         return end_turn_and_print(G, True, warriors)
     else:
@@ -228,6 +231,33 @@ def update_grid_state(G, path):
     G[v1[0]][v1[1]] = False
     G[v2[0]][v2[1]] = True
 
+def generate_EMP_locations(G):
+    grid_cell_per_EMP = 20
+    grid_size = sum(len(row) for row in G)
+    num_EMPs_to_place = int(grid_size/grid_cell_per_EMP)
+
+    i = 0
+    while i < num_EMPs_to_place:
+        x = random.choice(range(1, len(G)-1))
+        y = random.choice(range(len(G[0])))
+
+        if not G[x][y] and (x,y) not in EMP_locations:
+            i += 1
+            EMP_locations.append((x,y))
+
+def check_for_EMP(droid):
+    found_EMP = False
+    for EMP in EMP_locations:
+        if EMP == droid.get_location():
+            print("Droid found an EMP on the battlefield!")
+            droid.EMPs += 1
+            found_EMP = True
+            break
+
+    if found_EMP:
+        EMP_locations.remove(droid.get_location())
+
+
 def end_turn_and_print(G, game_over, warriors):
     print('  ', end = '')
     for y in range(len(G[0])):
@@ -245,10 +275,19 @@ def end_turn_and_print(G, game_over, warriors):
                         print('G ', end = '')
                     else:
                         print('B ', end = '')
-            if not printed and G[row][col]:
-                print('X ', end = '')
-            elif not printed:
-                print('. ', end = '')
+                    break
+
+            if not printed:
+                for EMP in EMP_locations:
+                    if EMP == (row, col):
+                        print('E ', end = '')
+                        printed = True
+                        break
+            if not printed:
+                if G[row][col]:
+                    print('X ', end = '')
+                else:
+                    print('. ', end = '')
         print()
 
     return game_over

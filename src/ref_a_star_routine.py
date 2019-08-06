@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 # Custom Imports
 from Warrior import Warrior
-from game_helpers import good_droid_turn, bad_droid_turn
+from game_helpers import good_droid_turn, bad_droid_turn, generate_EMP_locations
 
 
 def main():
@@ -50,6 +50,8 @@ def main():
     G[agent2_pos[0]][agent2_pos[1]] = True
     G[enemy_pos[0]][enemy_pos[1]] = True
     G[enemy2_pos[0]][enemy2_pos[1]] = True
+
+    generate_EMP_locations(G)
 
 
     print("Game start!")
