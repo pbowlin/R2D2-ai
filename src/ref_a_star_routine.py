@@ -5,34 +5,6 @@ from collections import defaultdict
 from Warrior import Warrior
 from game_helpers import good_droid_turn, bad_droid_turn
 
-def print_graph(G):
-    for row in G:
-        print(row)
-
-# -- Initialize game
-# Footbal field: 8 x 5
-#
-# Each box is a vertex
-#
-#       ------ ☐ ------
-#       ☐══☐══☐══☐══☐══☐
-#       ║           ║  ║
-#       ☐  ☐  ☐  ☐  ☐  ☐
-#       ║           ║  ║
-#       ☐  ☐  ☐  ☐  ☐  ☐
-#       ║     ║     ║  ║
-#       ☐  ☐  ☐  ☐  ☐  ☐
-#       ║     ║        ║
-#       ☐  ☐  ☐  ☐  ☐  ☐
-#       ║     ║        ║
-#       ☐  ☐  ☐  ☐  ☐  ☐
-#       ║              ║
-#       ☐  ☐══☐══☐══☐══☐
-#       ║              ║
-#       ☐══☐══☐  ☐  ☐  ☐
-#       ║
-# (0,0) ☐══☐══☐══☐══☐══☐
-# --- start ---
 
 def main():
     game_over = False
@@ -57,8 +29,9 @@ def main():
     agent2_pos= (0, 4)
 
 
-    enemy2_pos = (7, 0)
     enemy_pos = (7, 4)
+    enemy2_pos = (7, 0)
+    
 
 
     # if True, robots don't move
@@ -68,7 +41,7 @@ def main():
     good_agent2 = Warrior("D2-0709", agent2_pos, True, debug_mode)
 
     bad_agent1 = Warrior("D2-6F8D", enemy_pos, False, debug_mode)
-    bad_agent2 = Warrior("D2-5A22", enemy2_pos, False, debug_mode)
+    bad_agent2 = Warrior("Q5-A9B7", enemy2_pos, False, debug_mode)
 
 
     agents = [good_agent1, bad_agent1, good_agent2, bad_agent2]
@@ -90,11 +63,11 @@ def main():
 
             if agent.get_is_good():
                 game_over = good_droid_turn(agent, G, agents)
-                print_graph(G)
+                #print_graph(G)
             else:
                 print('trying bad droid turn')
                 game_over = bad_droid_turn(agent, G, agents)
-                print_graph(G)
+                #print_graph(G)
 
 
 if __name__ == '__main__':

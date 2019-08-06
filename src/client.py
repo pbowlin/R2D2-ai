@@ -223,8 +223,20 @@ class DroidClient:
         self.is_continuous_roll = False
         self.roll_continuous_params = None
 
-    def turn(self, angle, **kwargs):
+    def turn_from_relative_heading(self, angle, **kwargs):
         angle = (self.angle + angle) % 360
+
+        self.setup_for_roll(None)
+
+        command = 'turn %d' % angle
+        response = self.send_and_receive(command, **kwargs)
+        if response == 'Done turning.':
+            self.angle = angle
+            return True
+        else:
+            return False
+
+    def turn_from_initial_heading(self, angle, **kwargs):
 
         self.setup_for_roll(None)
 

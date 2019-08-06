@@ -5,13 +5,13 @@ from sound import play_airstrike
 from search_and_games import find_path
 
 speed_boost_chance = 0.0
-call_airstrike_prob = 0.5
+call_airstrike_prob = 0.2
 
 def good_droid_turn(droid, G, warriors):
     if not (droid.get_is_alive()):
-        print("GOOD AGENT LOST!")
+        print("GOOD AGENT IS DESTROYED!")
         # TODO: droid falls over
-        return True # Game Over
+        return end_turn_and_print(G, False, warriors)
 
     goal = find_good_droid_goal(G, droid.get_location())
     print('good droid goal: ' + str(goal))
@@ -20,8 +20,8 @@ def good_droid_turn(droid, G, warriors):
     path = find_path(droid.get_location(), goal, G)
     path = get_path(droid, path)
     if not path:
-        print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS 
-        return True # Game Over
+        print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS
+        return end_turn_and_print(G, False, warriors)
     
     if not droid.debug:
         follow_path(droid, path)
@@ -40,27 +40,28 @@ def good_droid_turn(droid, G, warriors):
         print("YOU WON")
         droid.droid_client.animate(3, 0) # chirping Sound
         # TODO: headspin
-        return True
+        return end_turn_and_print(G, True, warriors)
     else:
         dist, bad_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
         if 1 < dist < 2:
             if droid.EMPs > 0:
                 launch_EMP(droid, bad_droid)
 
-    return False
+    return end_turn_and_print(G, False, warriors)
 
 def launch_EMP(droid, bad_guy):
     print('Launching EMP')
     bad_guy.set_is_active(False)
     print('bad guy now inactive')
-    bad_guy.droid_client.play_sound(5, 0)
-    print('after play sound')
+    if not bad_guy.debug:
+        bad_guy.droid_client.play_sound(5, 0)
+        print('after play sound')
 
-    for i in range(4):
-        bad_guy.droid_client.rotate_head(45)
-        bad_guy.droid_client.rotate_head(0)
-        bad_guy.droid_client.rotate_head(90)
-        bad_guy.droid_client.rotate_head(0)
+        for i in range(4):
+            bad_guy.droid_client.rotate_head(45)
+            bad_guy.droid_client.rotate_head(0)
+            bad_guy.droid_client.rotate_head(90)
+            bad_guy.droid_client.rotate_head(0)
     
     droid.EMPs -= 1
 
@@ -85,16 +86,19 @@ def call_airstrike(agents):
     play_airstrike()
 
     if random.random() <= prob_airstrike_hit:
-        agent_to_attack.droid_client.animate(14, 0) ##fall over and die
+        if not agent_to_attack.debug:
+            agent_to_attack.droid_client.animate(14, 0) ##fall over and die
         agent_to_attack.set_is_alive(False)
         good_living_agents.remove(agent_to_attack)
         print("AIRSTRIKE HIT")
         if len(good_living_agents) == 0:
-            bad_agents[0].droid_client.animate(3,0)
-            bad_agents[1].droid_client.animate(3,0)
+            if not bad_agents[0].debug:
+                bad_agents[0].droid_client.animate(3,0)
+                bad_agents[1].droid_client.animate(3,0)
             return True ##this means the airstrike killed last living good agent
     else:
-        agent_to_attack.droid_client.animate(7, 0) ##airstrike missed target
+        if not agent_to_attack.debug:
+            agent_to_attack.droid_client.animate(7, 0) ##airstrike missed target
     return False
 
 def bad_droid_turn(droid, G, warriors):
@@ -103,11 +107,11 @@ def bad_droid_turn(droid, G, warriors):
     if not droid.get_is_active():
         print('droid is inactive')
         droid.set_is_active(True)
-        return False
+        return end_turn_and_print(G, False, warriors)
 
     if random.random() <= call_airstrike_prob:
         if call_airstrike(warriors):
-            return True ## this means the airstrike killed the last living good_agent
+            return end_turn_and_print(G, True, warriors) ## this means the airstrike killed the last living good_agent
 
     ## UPDATE DROID POSITION
     dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
@@ -121,7 +125,7 @@ def bad_droid_turn(droid, G, warriors):
     path = get_path(droid, path)
     if not path:
         print("NO PATH FOR BAD DROID")  ##GAME SHOULD NOT END IF WE HAVE 2 BAD DROIDS
-        return True  # Game Over
+        return end_turn_and_print(G, False, warriors)
     
     if not droid.debug:
         follow_path(droid, path)
@@ -134,7 +138,7 @@ def bad_droid_turn(droid, G, warriors):
     #enemy_pos = path[1]
 
     # TODO: POST UPDATE ACTIONS
-    return False
+    return end_turn_and_print(G, False, warriors)
 
 def got_speed_boost():
     return (random.random() < speed_boost_chance)
@@ -193,7 +197,30 @@ def find_good_droid_goal(G, location):
 
     return goal
 
+def end_turn_and_print(G, game_over, warriors):
+    print('  ', end = '')
+    for y in range(len(G[0])):
+        print('{} '.format(y), end = '')
 
+    print()
+    for row in range(len(G)):
+        print ('{} '.format(row), end = '')
+        for col in range(len(G[0])):
+            printed = False
+            for warrior in warriors:
+                if warrior.get_location() == (row, col):
+                    printed = True
+                    if warrior.get_is_good():
+                        print('G ', end = '')
+                    else:
+                        print('B ', end = '')
+            if not printed and G[row][col]:
+                print('X ', end = '')
+            elif not printed:
+                print('. ', end = '')
+        print()
+
+    return game_over
 
 
 
