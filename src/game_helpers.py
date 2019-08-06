@@ -8,30 +8,45 @@ speed_boost_chance = 0.0
 call_airstrike_prob = 0.2
 
 def good_droid_turn(droid, G, warriors):
+    print("Good droid at {} attempting its turn".format(droid.get_location()))
     if not (droid.get_is_alive()):
         print("GOOD AGENT IS DESTROYED!")
         # TODO: droid falls over
         return end_turn_and_print(G, False, warriors)
 
-    goal = find_good_droid_goal(G, droid.get_location())
-    print('good droid goal: ' + str(goal))
+    goals = find_good_droid_goals(G, droid.get_location())
+    path = None
 
-    ## UPDATE DROID POSITION
-    path = find_path(droid.get_location(), goal, G)
-    path = get_path(droid, path)
+    for goal in goals:
+        droid_in_goal = False
+        for w in warriors:
+            if goal == w.get_location():
+                droid_in_goal = True
+                break
+        if not droid_in_goal:
+            print('good droid attempted goal: ' + str(goal))
+
+            ## UPDATE DROID POSITION
+            path = find_path(droid.get_location(), goal, G)
+            if path:
+                break
+
     if not path:
         print("NO PATH FOR GOOD DROID") ##GAME SHOULD NOT END IF 2 GOOD DROIDS
         return end_turn_and_print(G, False, warriors)
+
+    path = get_path(droid, path)
     
     if not droid.debug:
         follow_path(droid, path)
 
     ## UPDATE GRID STATE
-    v1 = path[0]
-    v2 = path[-1]
-    G[v1[0]][v1[1]] = False
-    G[v2[0]][v2[1]] = True
+    #v1 = path[0]
+    #v2 = path[-1]
+    #G[v1[0]][v1[1]] = False
+    #G[v2[0]][v2[1]] = True
     #agent_pos = path[1]
+    update_grid_state(G, path)
 
     ## POST UPDATE ACTIONS
     droid_location = droid.get_location()
@@ -82,7 +97,7 @@ def call_airstrike(agents):
         agent_to_attack = good_living_agents[0] 
         prob_airstrike_hit /= 2  
     
-
+    print("Attempting to hit good droid at {}".format(agent_to_attack.get_location()))
     play_airstrike()
 
     if random.random() <= prob_airstrike_hit:
@@ -97,12 +112,13 @@ def call_airstrike(agents):
                 bad_agents[1].droid_client.animate(3,0)
             return True ##this means the airstrike killed last living good agent
     else:
+        print("AIRSTRIKE MISS")
         if not agent_to_attack.debug:
             agent_to_attack.droid_client.animate(7, 0) ##airstrike missed target
     return False
 
 def bad_droid_turn(droid, G, warriors):
-
+    print("Bad droid at {} attempting its turn".format(droid.get_location()))
     # Skip Droid's Turn
     if not droid.get_is_active():
         print('droid is inactive')
@@ -110,6 +126,7 @@ def bad_droid_turn(droid, G, warriors):
         return end_turn_and_print(G, False, warriors)
 
     if random.random() <= call_airstrike_prob:
+        print('Bad droid at {} called air strike'.format(droid.get_location()))
         if call_airstrike(warriors):
             return end_turn_and_print(G, True, warriors) ## this means the airstrike killed the last living good_agent
 
@@ -131,11 +148,12 @@ def bad_droid_turn(droid, G, warriors):
         follow_path(droid, path)
 
     ## UPDATE GRID STATE
-    v1 = path[0]
-    v2 = path[-1]
-    G[v1[0]][v1[1]] = False
-    G[v2[0]][v2[1]] = True
+    #v1 = path[0]
+    #v2 = path[-1]
+    #G[v1[0]][v1[1]] = False
+    #G[v2[0]][v2[1]] = True
     #enemy_pos = path[1]
+    update_grid_state(G, path)
 
     # TODO: POST UPDATE ACTIONS
     return end_turn_and_print(G, False, warriors)
@@ -148,7 +166,7 @@ def get_nearest_opponent(location, agent, warriors):
     d_min = math.inf
     opponent = None
     for w in warriors:
-        if w.get_is_good() is not agent.get_is_good():
+        if w.get_is_good() is not agent.get_is_good() and w.get_is_alive():
             dist = compute_distance(location, w.get_location())
             if dist < d_min:
                 d_min = dist
@@ -184,18 +202,31 @@ def find_bad_droid_goal(G, goal):
         if G[goal[0]][goal[1]] == False:
             return goal
 
-def find_good_droid_goal(G, location):
-    goal_distance = 1000000
-    x = len(G)-1
-    goal = (x, 0)
+def find_good_droid_goals(G, location):
+    
+    goals_and_distance = []
+    #goal_distance = 1000000
+    x = len(G)-1 #Good droids are always trying to get to the far side of the grid
+    #goal = (x, 0)
 
     for y in range(len(G[-1])):
         cell_distance = compute_distance(location, (x, y))
-        if cell_distance < goal_distance:
-            goal_distance = cell_distance
-            goal = (x, y)
+        #if cell_distance < goal_distance:
+            #goal_distance = cell_distance
+            #goal = (x, y)
+        goals_and_distance.append(((x,y),cell_distance))
 
-    return goal
+    goals_and_distance.sort(key=lambda x: x[1])
+
+    goals = [x[0] for x in goals_and_distance]
+
+    return goals
+
+def update_grid_state(G, path):
+    v1 = path[0]
+    v2 = path[-1]
+    G[v1[0]][v1[1]] = False
+    G[v2[0]][v2[1]] = True
 
 def end_turn_and_print(G, game_over, warriors):
     print('  ', end = '')

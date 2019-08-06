@@ -62,10 +62,13 @@ def main():
                 return
 
             if agent.get_is_good():
+                print()
+                print('Trying good droid turn')
                 game_over = good_droid_turn(agent, G, agents)
                 #print_graph(G)
             else:
-                print('trying bad droid turn')
+                print()
+                print('Trying bad droid turn')
                 game_over = bad_droid_turn(agent, G, agents)
                 #print_graph(G)
 
