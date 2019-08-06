@@ -4,7 +4,7 @@ from a_star import A_star
 from sound import play_airstrike
 from search_and_games import find_path
 
-speed_boost_chance = 0.0
+speed_boost_chance = 0.2
 call_airstrike_prob = 0.2
 EMP_locations = []
 
@@ -82,10 +82,11 @@ def launch_EMP(droid, bad_guy):
             bad_guy.droid_client.rotate_head(0)
     
     droid.EMPs -= 1
+    print("Droid now has {} EMPs left.".format(droid.EMPs))
 
 def call_airstrike(agents):
     print("AIRSTRIKE CALLED")
-    prob_airstrike_hit = 0.5
+    prob_airstrike_hit = 0.3
     good_living_agents = []
     bad_agents = []
     for agent in agents:
@@ -94,11 +95,17 @@ def call_airstrike(agents):
         elif not agent.get_is_good():
             bad_agents.append(agent)
 
+
+    agent_to_attack = random.choice(good_living_agents)
+    '''
     if len(good_living_agents) > 1:
         agent_to_attack = good_living_agents[0] if random.random() < .5 else good_living_agents[1]
     else:
         agent_to_attack = good_living_agents[0] 
         prob_airstrike_hit /= 2  
+    '''
+    if len(good_living_agents) == 1:
+        prob_airstrike_hit /= 2
     
     print("Attempting to hit good droid at {}".format(agent_to_attack.get_location()))
     play_airstrike()
@@ -137,7 +144,7 @@ def bad_droid_turn(droid, G, warriors):
     dist, closest_droid = get_nearest_opponent(droid.get_location(), droid, warriors)
     # TODO: UPDATE LOGIC FOR SETTING DROID GOAL
 
-    bad_droid_goal = find_bad_droid_goal(G, closest_droid.get_location())
+    bad_droid_goal = find_bad_droid_goal(G, droid, closest_droid.get_location())
 
     path = find_path(droid.get_location(), bad_droid_goal, G)
 
@@ -183,6 +190,7 @@ def get_path(droid, path):
     if path is None:
         return False
     if got_speed_boost() and len(path) > 2:
+        print("Droid got a speed boost!")
         path = path[0:3]
         droid.set_location(path[2])
     elif len(path) > 1:
@@ -199,11 +207,17 @@ def compute_distance(location1, location2):
     d_x, d_y = (x_2 - x_1), (y_2 - y_1)
     return math.sqrt(d_x**2 + d_y**2)
 
-def find_bad_droid_goal(G, goal):
+def find_bad_droid_goal(G, droid, goal):
+    i = 1
+    j = 0
     while True:
-        goal = (goal[0] + 1, goal[1])
-        if G[goal[0]][goal[1]] == False:
+        goal = (goal[0] + i, goal[1])
+        if G[goal[0]][goal[1]] == False or (goal[0],goal[1]) == droid.get_location():
             return goal
+        if goal[0] == len(G) - 1:
+            i = 0
+            goal = (goal[0],j)
+            j += 1
 
 def find_good_droid_goals(G, location):
     
@@ -252,6 +266,7 @@ def check_for_EMP(droid):
             print("Droid found an EMP on the battlefield!")
             droid.EMPs += 1
             found_EMP = True
+            print("Droid has {} EMPs.".format(droid.EMPs))
             break
 
     if found_EMP:

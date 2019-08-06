@@ -22,15 +22,21 @@ def main():
 
 
 
-    goal = (7, 4)
-    #goal = (4, 3)
     ## Set Up Agents
+    '''
     agent1_pos = (0, 0)
     agent2_pos= (0, 4)
 
 
     enemy_pos = (7, 4)
     enemy2_pos = (7, 0)
+    '''
+    agent1_pos = (0, 2)
+    agent2_pos= (4, 2)
+
+
+    enemy_pos = (6, 2)
+    enemy2_pos = (7, 2)
     
 
 
