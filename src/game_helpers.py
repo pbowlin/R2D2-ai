@@ -5,7 +5,7 @@ from sound import play_airstrike
 from search_and_games import find_path
 import time
 
-random.seed(3)
+#random.seed(3)
 speed_boost_chance = 0.25
 call_airstrike_prob = 0.2
 EMP_locations = []
