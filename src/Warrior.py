@@ -27,11 +27,12 @@ class Warrior(object):
 
         # CODERPAD SECTION
         self.debug = debug
-        droid_client = DroidClient()
+        
         if not debug:
+            droid_client = DroidClient()
             droid_client.scan()
             droid_client.connect_to_droid(droid_id)
-        self.droid_client = droid_client
+            self.droid_client = droid_client
 
     def set_location(self, location):
         self.current_location = location
