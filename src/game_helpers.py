@@ -6,8 +6,10 @@ from search_and_games import find_path
 import time
 
 #random.seed(3)
-speed_boost_chance = 0.25
-call_airstrike_prob = 0.2
+speed_boost_prob = 0.25
+airstrike_call_prob = 0.2
+airstrike_hit_prob = 0.25
+debug_mode = False
 EMP_locations = []
 
 def good_droid_turn(droid, G, warriors):
@@ -40,7 +42,7 @@ def good_droid_turn(droid, G, warriors):
 
     path = get_path(droid, path)
     
-    if not droid.debug:
+    if not debug_mode:
         follow_path(droid, path)
 
     ## UPDATE GRID STATE
@@ -57,7 +59,7 @@ def good_droid_turn(droid, G, warriors):
     if droid_location[0] > len(G) - 2:
     #if droid in goal:
         print("YOU WON")
-        if not droid.debug:
+        if not debug_mode:
             droid.droid_client.animate(3, 0) # chirping Sound
         # TODO: headspin
         return end_turn_and_print(G, True, warriors)
@@ -73,7 +75,7 @@ def launch_EMP(droid, bad_guy):
     print('Launching EMP')
     bad_guy.set_is_active(False)
     print('bad guy now inactive')
-    if not bad_guy.debug:
+    if not debug_mode:
         bad_guy.droid_client.play_sound(5, 0)
         print('after play sound')
 
@@ -89,7 +91,12 @@ def launch_EMP(droid, bad_guy):
 
 def call_airstrike(agents):
     print("AIRSTRIKE CALLED")
-    prob_airstrike_hit = 0.3
+    global airstrike_hit_prob
+    global airstrike_call_prob
+
+    print(airstrike_call_prob)
+    print(airstrike_hit_prob)
+
     good_living_agents = []
     bad_agents = []
     for agent in agents:
@@ -100,33 +107,33 @@ def call_airstrike(agents):
 
 
     agent_to_attack = random.choice(good_living_agents)
-    '''
-    if len(good_living_agents) > 1:
-        agent_to_attack = good_living_agents[0] if random.random() < .5 else good_living_agents[1]
-    else:
-        agent_to_attack = good_living_agents[0] 
-        prob_airstrike_hit /= 2  
+
     '''
     if len(good_living_agents) == 1:
-        prob_airstrike_hit /= 2
+        airstrike_hit_prob /= 2
+    '''
+    
     
     print("Attempting to hit good droid at {}".format(agent_to_attack.get_location()))
-    play_airstrike()
+    if not debug_mode:
+        play_airstrike()
 
-    if random.random() <= prob_airstrike_hit:
-        if not agent_to_attack.debug:
+    if random.random() <= airstrike_hit_prob:
+        if not debug_mode:
             agent_to_attack.droid_client.animate(14, 0) ##fall over and die
+            time.sleep(4)
         agent_to_attack.set_is_alive(False)
         good_living_agents.remove(agent_to_attack)
         print("AIRSTRIKE HIT")
         if len(good_living_agents) == 0:
-            if not bad_agents[0].debug:
-                bad_agents[0].droid_client.animate(3,0)
-                bad_agents[1].droid_client.animate(3,0)
+            if not debug_mode:
+                for bad_droid in bad_agents:
+                    bad_droid.droid_client.animate(3,0)
+                
             return True ##this means the airstrike killed last living good agent
     else:
         print("AIRSTRIKE MISS")
-        if not agent_to_attack.debug:
+        if not debug_mode:
             agent_to_attack.droid_client.play_sound(7, 0) ##airstrike missed target
             time.sleep(4)
     return False
@@ -139,7 +146,7 @@ def bad_droid_turn(droid, G, warriors):
         droid.set_is_active(True)
         return end_turn_and_print(G, False, warriors)
 
-    if random.random() <= call_airstrike_prob:
+    if random.random() <= airstrike_call_prob:
         print('Bad droid at {} called air strike'.format(droid.get_location()))
         if call_airstrike(warriors):
             return end_turn_and_print(G, True, warriors) ## this means the airstrike killed the last living good_agent
@@ -158,7 +165,7 @@ def bad_droid_turn(droid, G, warriors):
         print("NO PATH FOR BAD DROID")  ##GAME SHOULD NOT END IF WE HAVE 2 BAD DROIDS
         return end_turn_and_print(G, False, warriors)
     
-    if not droid.debug:
+    if not debug_mode:
         follow_path(droid, path)
 
     ## UPDATE GRID STATE
@@ -173,7 +180,7 @@ def bad_droid_turn(droid, G, warriors):
     return end_turn_and_print(G, False, warriors)
 
 def got_speed_boost():
-    return (random.random() < speed_boost_chance)
+    return (random.random() < speed_boost_prob)
 
 # Get nearest opponent of the agent
 def get_nearest_opponent(location, agent, warriors):
@@ -195,9 +202,10 @@ def get_path(droid, path):
         return False
     if got_speed_boost() and len(path) > 2:
         print("Droid got a speed boost!")
+        print(speed_boost_prob)
         path = path[0:3]
         droid.set_location(path[2])
-        if not droid.debug:
+        if not debug_mode:
             droid.droid_client.play_sound(3, 0)
     elif len(path) > 1:
         path = path[0:2]
@@ -250,6 +258,22 @@ def update_grid_state(G, path):
     v2 = path[-1]
     G[v1[0]][v1[1]] = False
     G[v2[0]][v2[1]] = True
+
+def initialize_game_start_parameters(G, speed_boost_chance, airstrike_probs, debug):
+    global speed_boost_prob
+    global airstrike_call_prob
+    global airstrike_hit_prob
+    global debug_mode
+
+    speed_boost_prob = speed_boost_chance
+
+    airstrike_call_prob = airstrike_probs[0]
+    airstrike_hit_prob = airstrike_probs[1]
+
+    debug_mode = debug
+
+    generate_EMP_locations(G)
+
 
 def generate_EMP_locations(G):
     grid_cell_per_EMP = 20

@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 # Custom Imports
 from Warrior import Warrior
-from game_helpers import good_droid_turn, bad_droid_turn, generate_EMP_locations
+from game_helpers import good_droid_turn, bad_droid_turn, initialize_game_start_parameters
 import argparse
 import csv
 
@@ -38,20 +38,9 @@ def load_droids(droid_file, debug_mode):
 
         return droid_list
 
-
-def main():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('gameboard', help='Filepath of the file specifying the game board grid.')
-    parser.add_argument('droids', help="""Filepath of the file specifying the droids playing in the game. Each line in the 
-        file should pertain to 1 droid in the game and contain 3 values seperated by spaces: droid name, starting position, and droid morality. 
-        ex: D2-0709 (0,0) Good, Q5-8CC0 (7,4) Bad""")
-    parser.add_argument('-d','--debug', help='Turn on debug mode. The game will not connect to the droids.', action = "store_true")
-    parser.add_argument('-t','--turn_order', help='Specify the turn order of the droids. Defaults to the order they are presented in droid_list.')
-    parser.add_argument('-sb','--speed_boost_chance', help='Specify the probability with which the droids will receive a speed boost at the start of their turn. Default = 0.25.')
-    parser.add_argument('-as','--airstrike_chance', help='Specify the probability with which the bad droids will receive call in an airstrike at the start of their turn. Default = 0.20.')
-    args = parser.parse_args()
-
+def sort_arguments(args):
+    print(args)
+    print('done args')
     ## Graph Construction
     G = load_gameboard(args.gameboard)
 
@@ -63,7 +52,24 @@ def main():
         droid_start = droid.get_location()
         G[droid_start[0]][droid_start[1]] = True
 
-    generate_EMP_locations(G)
+    initialize_game_start_parameters(G, args.speed_boost_chance, args.airstrike_probabilities, args.debug)
+
+    return G, droid_list
+
+def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('gameboard', help='Filepath of the file specifying the game board grid.')
+    parser.add_argument('droids', help="""Filepath of the file specifying the droids playing in the game. Each line in the 
+        file should pertain to 1 droid in the game and contain 3 values seperated by spaces: droid name, starting position, and droid morality. 
+        ex: D2-0709 (0,0) Good, Q5-8CC0 (7,4) Bad""")
+    parser.add_argument('-d','--debug', help='Turn on debug mode. The game will not connect to the droids.', action = "store_true")
+    parser.add_argument('-t','--turn_order', help='Specify the turn order of the droids. Defaults to the order they are presented in droid_list.')
+    parser.add_argument('-sb','--speed_boost_chance', help='Specify the probability with which the droids will receive a speed boost at the start of their turn (Default = 0.25)', type=float, default=0.25)
+    parser.add_argument('-as','--airstrike_probabilities', help='Specify the probability with which the bad droids will call in an airstrike at the start of their turn (Default = 0.20) and the probability with which an airstrike will hit a good droid (Default = 0.25).', nargs=2, type=float, default=[0.2,0.25])
+    args = parser.parse_args()
+
+    G, droid_list = sort_arguments(args)
 
 
     print("Game start!")
