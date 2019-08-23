@@ -1,4 +1,6 @@
-D2-B54D (0,0) Good
-Q5-71A9 (7,4) Bad
-D2-XXXX (0,4) Good
-Q5-XXXX (7,0) Bad
+D2-B54D 0 0 Good
+Q5-71A9 11 0 Bad
+D2-XXX1 0 7 Good
+Q5-XXX1 11 7 Bad
+D2-XXX2 0 4 Good
+Q5-XXX3 11 4 Bad

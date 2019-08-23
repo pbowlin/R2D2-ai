@@ -28,10 +28,10 @@ def load_droids(droid_file, debug_mode):
         droid_list = []
         for line in reader:
             droid_name = line[0]
-            droid_start = (int(line[1][1]),int(line[1][3]))
+            droid_start = (int(line[1]),int(line[2]))
             droid_morality = True
 
-            if line[2] == 'Bad':
+            if line[3] == 'Bad':
                 droid_morality = False
             droid = Warrior(droid_name, droid_start, droid_morality, debug_mode)
             droid_list.append(droid)
@@ -61,8 +61,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('gameboard', help='Filepath of the file specifying the game board grid.')
     parser.add_argument('droids', help="""Filepath of the file specifying the droids playing in the game. Each line in the 
-        file should pertain to 1 droid in the game and contain 3 values seperated by spaces: droid name, starting position, and droid morality. 
-        ex: D2-0709 (0,0) Good, Q5-8CC0 (7,4) Bad""")
+        file should pertain to 1 droid in the game and contain 4 values seperated by spaces: droid name, start row, start column, and droid morality. 
+        ex: D2-0709 0 0 Good""")
     parser.add_argument('-d','--debug', help='Turn on debug mode. The game will not connect to the droids.', action = "store_true")
     parser.add_argument('-t','--turn_order', help='Specify the turn order of the droids. Defaults to the order they are presented in droid_list.')
     parser.add_argument('-sb','--speed_boost_chance', help='Specify the probability with which the droids will receive a speed boost at the start of their turn (Default = 0.25)', type=float, default=0.25)
